@@ -1,0 +1,190 @@
+/* styles.css */
+
+/* ===== Reset & Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    background-color: #f5f7fa;
+    color: #2c3e50;
+    padding: 40px 20px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ===== Page Title ===== */
+h1 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 2.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #1e293b; /* optional: dark slate gray for contrast */
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+/* ===== Navigation Bar ===== */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 45px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #2980b9;
+    color: #ecf0f1;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(41, 128, 185, 0.25);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+}
+
+nav a:hover,
+nav a:focus {
+    background-color: #1c5980;
+    box-shadow: 0 6px 12px rgba(28, 89, 128, 0.5);
+    outline: none;
+    cursor: pointer;
+}
+
+/* ===== Table Styles ===== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    font-size: 1rem;
+}
+
+/* Table Header */
+th {
+    background-color: #34495e;
+    color: #ecf0f1;
+    font-weight: 700;
+    padding: 18px 24px;
+    text-align: center;
+    user-select: none;
+}
+
+/* Table Data Cells */
+td {
+    padding: 16px 24px;
+    text-align: center;
+    color: #2c3e50;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+/* Zebra Striping */
+tbody tr:nth-child(even) td {
+    background-color: #f9fbfc;
+}
+
+/* Row Hover Effect */
+tbody tr:hover td {
+    background-color: #d6e7f5;
+    cursor: default;
+}
+
+/* ===== Action Buttons ===== */
+.actions a {
+    margin: 0 10px;
+    color: #2980b9;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    border: 1.5px solid transparent;
+}
+
+.actions a:hover,
+.actions a:focus {
+    background-color: #1c5980;
+    color: #ecf0f1;
+    border-color: #144466;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Icons in actions - increase size for clarity */
+.actions a svg,
+.actions a::before {
+    font-size: 1.1rem;
+}
+
+/* ===== Empty State Styling ===== */
+.empty {
+    text-align: center;
+    padding: 30px 0;
+    font-style: italic;
+    color: #7f8c8d;
+    user-select: none;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 25px 15px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    nav {
+        gap: 15px;
+        justify-content: center;
+    }
+
+    nav a {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+
+    table,
+    th,
+    td {
+        font-size: 0.9rem;
+    }
+
+    td, th {
+        padding: 12px 15px;
+    }
+
+    .actions a {
+        margin: 0 6px;
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== Accessibility Focus States ===== */
+a:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
+
+/* ===== Optional: Icon Fonts or Emoji Adjustments ===== */
+/* If you want to replace icons with SVG or fonts later, this space is for that. */
