@@ -1,34 +1,29 @@
-<?php
-// index.php – Prototype for Lab Exam
-require 'config.php'; // database connection file
-
-// Fetch all books
-$sql = "SELECT * FROM books";
-$stmt = $mysqli->prepare($sql);
-$stmt->execute();
-$result = $stmt->get_result();
-$books = $result->fetch_all(MYSQLI_ASSOC);
-?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Library Management System</title>
-    <!-- Link to external stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1> Library Management System</h1>
+    <a href="index.php" class="home-btn">🏠 Home</a>
+    <h1>Library Management System</h1>
 
-    <!-- Navigation -->
+    <div id="ajax-message" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
+
     <nav>
-        <a href="add_book.php">➕ Add Book</a>
-        <a href="borrow_book.php">📖 Borrow Book</a>
-        <a href="return_book.php">🔄 Return Book</a>
-        <a href="search.php">🔍 Search Books</a>
+        <a href="add.php">➕ Add Book</a>
+        <a href="borrow-return.php">📖 Borrow / Return Book</a>
     </nav>
+
+    <!-- Search Bar -->
+    <form id="search-form" style="text-align:center; margin-bottom: 20px;">
+        <input type="text" name="q" id="search-input" placeholder="Search by title, author, or ISBN"
+            style="padding: 10px; width: 60%; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;">
+        <button type="submit">🔍 Search</button>
+    </form>
 
     <!-- Books Table -->
     <table>
@@ -43,29 +38,61 @@ $books = $result->fetch_all(MYSQLI_ASSOC);
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-            <?php if (count($books) > 0): ?>
-                <?php foreach ($books as $book): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($book['title']) ?></td>
-                        <td><?= htmlspecialchars($book['author']) ?></td>
-                        <td><?= htmlspecialchars($book['publisher']) ?></td>
-                        <td><?= htmlspecialchars($book['year_published']) ?></td>
-                        <td><?= htmlspecialchars($book['isbn']) ?></td>
-                        <td><?= htmlspecialchars($book['available']) ?></td>
-                        <td class="actions">
-                            <a href="edit_book.php?id=<?= $book['id'] ?>" title="Edit Book">✏️ Edit</a>
-                            <a href="delete_book.php?id=<?= $book['id'] ?>" onclick="return confirm('Are you sure you want to delete this book?')" title="Delete Book">🗑️ Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="7" class="empty">No books found.</td>
-                </tr>
-            <?php endif; ?>
+        <tbody id="books-table">
+            <!-- Table rows loaded via AJAX -->
         </tbody>
     </table>
+
+    <script>
+        const booksTable = document.getElementById('books-table');
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+
+        // Function to load initial books
+        function loadBooks() {
+            fetch('browse-view.php')
+                .then(res => res.text())
+                .then(html => booksTable.innerHTML = html)
+                .catch(err => console.error(err));
+        }
+
+        // Load books initially
+        loadBooks();
+
+        // Search functionality
+        searchForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const query = searchInput.value;
+
+            fetch('search.php?q=' + encodeURIComponent(query))
+                .then(res => res.text())
+                .then(html => booksTable.innerHTML = html)
+                .catch(err => console.error(err));
+        });
+
+        // Delete book functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn')) {
+                const btn = e.target;
+                const bookId = btn.dataset.id;
+                if (confirm("Are you sure you want to delete this book?")) {
+                    fetch('edit-remove.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: 'delete_id=' + bookId
+                        })
+                        .then(res => res.text())
+                        .then(data => {
+                            document.getElementById('ajax-message').innerHTML = data;
+                            btn.closest('tr').remove();
+                        })
+                        .catch(err => console.error(err));
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
