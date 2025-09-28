@@ -44,7 +44,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'librarian') {
                 <input type="text" name="title" placeholder="Book Title" required>
                 <input type="text" name="author" placeholder="Author" required>
                 <input type="text" name="publisher" placeholder="Publisher" required>
-                <input type="text" name="isbn" placeholder="ISBN" required>
+                <input type="text" name="isbn" placeholder="ISBN" required
+       pattern="^\d{9}$|^\d{13}$"
+       title="ISBN must be either 9 or 13 digits"
+       maxlength="13">
+
                 <input type="number" name="year" placeholder="Publishing Year" min="1000" max="9999" required>
                 <input type="number" name="copies" placeholder="Number of Copies" min="1" required>
                 <button type="submit" name="add_book" value="1">Add New Book</button>
