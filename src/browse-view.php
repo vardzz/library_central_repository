@@ -1,241 +1,248 @@
 <?php
+// browse-view.php: Shared view for displaying books table, customized by user role
+// Updated with Edit Modal (AJAX integration with edit-remove.php)
+
 require 'config.php';
 
-// ===== AJAX DELETE HANDLER =====
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
-    $delete_id = intval($_POST['delete_id']);
-    $stmt = $mysqli->prepare("DELETE FROM books WHERE id=?");
-    $stmt->bind_param("i", $delete_id);
-
-    if ($stmt->execute()) {
-        echo "<span class='message success'>✅ Book deleted successfully!</span>";
-    } else {
-        echo "<span class='message error'>❌ Error deleting book: {$stmt->error}</span>";
-    }
-    exit; // Stop the rest of the page from rendering for AJAX
-}
-
-// ===== EDIT HANDLER =====
-$message = "";
-$action = $_GET['action'] ?? '';
-$id = intval($_GET['id'] ?? 0);
-
-if ($action === 'edit') {
-    if (!$id) die("Invalid book ID.");
-
-    // Fetch existing book data
-    $stmt = $mysqli->prepare("SELECT * FROM books WHERE id=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $book = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    // Handle form submission
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-        $title = trim($_POST['title']);
-        $author = trim($_POST['author']);
-        $publisher = trim($_POST['publisher']);
-        $year = $_POST['year_published'];
-        $isbn = trim($_POST['isbn']);
-        $copies = intval($_POST['copies']);
-        $available = intval($_POST['available']);
-
-        $stmt = $mysqli->prepare("UPDATE books SET title=?, author=?, publisher=?, year_published=?, isbn=?, copies=?, available=? WHERE id=?");
-        $stmt->bind_param("sssssiii", $title, $author, $publisher, $year, $isbn, $copies, $available, $id);
-
-        if ($stmt->execute()) {
-            $message = "✅ Book updated successfully!";
-            $book = [
-                'title' => $title,
-                'author' => $author,
-                'publisher' => $publisher,
-                'year_published' => $year,
-                'isbn' => $isbn,
-                'copies' => $copies,
-                'available' => $available
-            ];
-        } else {
-            $message = "❌ Error updating book: " . $stmt->error;
-        }
-        $stmt->close();
-    }
-}
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Book </title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .edit-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 25px;
-            color: #1e293b;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #34495e;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px 14px;
-            margin-bottom: 18px;
-            border-radius: 8px;
-            border: 1.5px solid #d0d7de;
-            font-size: 1rem;
-        }
-
-        input:focus {
-            border-color: #2980b9;
-            outline: none;
-            box-shadow: 0 0 4px rgba(41, 128, 185, 0.4);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px 0;
-            background-color: #2980b9;
-            color: #fff;
-            font-weight: 600;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(41, 128, 185, 0.25);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        button:hover,
-        button:focus {
-            background-color: #1c5980;
-            box-shadow: 0 6px 12px rgba(28, 89, 128, 0.4);
-        }
-
-        .message {
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .message.success {
-            background: #e0f8e0;
-            color: #27ae60;
-            border: 1px solid #27ae60;
-        }
-
-        .message.error {
-            background: #ffe0e0;
-            color: #c0392b;
-            border: 1px solid #e74c3c;
-        }
-
-        .deleted-message {
-            text-align: center;
-            font-size: 1.1rem;
-            margin-top: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .edit-container {
-                padding: 20px;
-                margin: 30px auto;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <a href="index.php" class="home-btn">🏠 Home</a>
-
-    <div class="edit-container">
-        <h1>Edit Book</h1>
-
-        <?php if (!empty($message)): ?>
-            <p class="message <?= strpos($message, 'Error') !== false ? 'error' : 'success' ?>">
-                <?= htmlspecialchars($message) ?>
-            </p>
-        <?php endif; ?>
-
-        <?php if ($action === 'edit' && isset($book)): ?>
-            <form method="post">
-                <label>Title:</label>
-                <input type="text" name="title" value="<?= htmlspecialchars($book['title']) ?>" required>
-
-                <label>Author:</label>
-                <input type="text" name="author" value="<?= htmlspecialchars($book['author']) ?>">
-
-                <label>Publisher:</label>
-                <input type="text" name="publisher" value="<?= htmlspecialchars($book['publisher']) ?>">
-
-                <label>Year Published:</label>
-                <input type="number" name="year_published" value="<?= htmlspecialchars($book['year_published']) ?>" min="1500" max="2099">
-
-                <label>ISBN:</label>
-                <input type="text" name="isbn" value="<?= htmlspecialchars($book['isbn']) ?>">
-
-                <label>Copies:</label>
-                <input type="number" name="copies" value="<?= htmlspecialchars($book['copies']) ?>" min="1">
-
-                <label>Available:</label>
-                <input type="number" name="available" value="<?= htmlspecialchars($book['available']) ?>" min="0">
-
-                <button type="submit" name="update">💾 Update Book</button>
-            </form>
-        <?php endif; ?>
-    </div>
-</body>
-
-</html>
-Jericho
-<?php
-require 'config.php';
-
-// Fetch all books
-$sql = "SELECT * FROM books";
+// ===== FETCH ALL BOOKS FROM DB =====
+$sql = "SELECT id, title, author, publisher, year_published AS year, isbn, copies, available
+        FROM books ORDER BY LOWER(title) ASC";
 $stmt = $mysqli->prepare($sql);
+if (!$stmt) {
+    die("Prepare failed: " . $mysqli->error);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 $books = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-// Generate table rows
-if (count($books) > 0) {
-    foreach ($books as $book) {
-        echo '<tr>';
-        echo '<td>' . htmlspecialchars($book['title']) . '</td>';
-        echo '<td>' . htmlspecialchars($book['author']) . '</td>';
-        echo '<td>' . htmlspecialchars($book['publisher']) . '</td>';
-        echo '<td>' . htmlspecialchars($book['year_published']) . '</td>';
-        echo '<td>' . htmlspecialchars($book['isbn']) . '</td>';
-        echo '<td>' . htmlspecialchars($book['available']) . '</td>';
-        echo '<td class="actions">';
-        echo '<a href="edit-remove.php?action=edit&id=' . $book['id'] . '">✏️ Edit</a>';
-        echo ' <button class="delete-btn" data-id="' . $book['id'] . '">🗑️ Delete</button>';
-        echo '</td>';
-        echo '</tr>';
+
+$role = $_SESSION['role'] ?? 'reader';
+$isLibrarian = ($role === 'librarian');
+?>
+
+
+<!-- Shared Search Bar -->
+<div class="search-bar">
+    <input type="text" id="search" placeholder="Search books...">
+    <button onclick="searchBooks()">Search</button>
+</div>
+
+
+<!-- Dynamic Table -->
+<table class="library-table" id="booksTable">
+    <thead>
+        <tr>
+            <?php if ($isLibrarian): ?>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Year</th>
+                <th>Publisher</th>
+                <th>Copies</th>
+                <th>Status</th>
+                <th>Actions</th>
+            <?php else: ?>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Year</th>
+                <th>Publisher</th>
+                <th>Available Copies</th>
+                <th>Status</th>
+            <?php endif; ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (count($books) > 0):
+            foreach ($books as $book):
+                $statusClass = ($book['available'] > 0) ? 'available' : 'unavailable';
+                $statusText = ($book['available'] > 0) ? 'Available' : 'Unavailable';
+
+
+                // Unified text format for copies
+                $copiesText = $book['available'] . '/' . $book['copies'] .
+                    ($book['available'] == $book['copies']
+                        ? '<br><small>all available</small>'
+                        : '<br><small>' . $book['available'] . ' available</small>');
+        ?>
+        <tr>
+            <td>
+                <div class="book-cell">
+                    <div class="book-info">
+                        <strong><?php echo htmlspecialchars($book['title']); ?></strong><br>
+                        <small>ISBN: <?php echo htmlspecialchars($book['isbn']); ?></small>
+                    </div>
+                </div>
+            </td>
+            <td><?php echo htmlspecialchars($book['author'] ?? 'Unknown Author'); ?></td>
+            <td><?php echo htmlspecialchars($book['year'] ?? 'N/A'); ?></td>
+            <td><?php echo htmlspecialchars($book['publisher'] ?? 'Unknown Publisher'); ?></td>
+
+
+            <?php if ($isLibrarian): ?>
+                <td><strong><?php echo $copiesText; ?></strong></td>
+                <td><span class="status <?php echo $statusClass; ?>"><?php echo $statusText; ?></span></td>
+                <td class="actions">
+                    <div class="action-buttons">
+                        <!-- Edit Button -->
+                        <button class="btn btn-edit" onclick="openEditModal(<?php echo $book['id']; ?>)">
+                            Edit
+                        </button>
+                        <!-- Delete Button -->
+                        <button class="btn btn-delete delete-btn" onclick="deleteBook(<?php echo $book['id']; ?>)">
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            <?php else: ?>
+                <td><strong><?php echo $copiesText; ?></strong></td>
+                <td><span class="status <?php echo $statusClass; ?>"><?php echo $statusText; ?></span></td>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach;
+        else: ?>
+        <tr><td colspan="7" class="empty">No books found.</td></tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+
+<?php if ($isLibrarian): ?>
+<!-- ===== Edit Modal ===== -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('editModal').style.display='none'">&times;</span>
+        <h2>Edit Book</h2>
+        <form id="editForm">
+            <input type="hidden" name="id" id="edit-id">
+            <input type="text" name="title" id="edit-title" placeholder="Book Title" required>
+            <input type="text" name="author" id="edit-author" placeholder="Author" required>
+            <input type="number" name="year_published" id="edit-year" placeholder="Publishing Year" min="1000" max="9999" required>
+            <input type="text" name="publisher" id="edit-publisher" placeholder="Publisher" required>
+            <input type="text" name="isbn" id="edit-isbn" placeholder="ISBN" required>
+            <input type="number" name="copies" id="edit-copies" placeholder="Number of Copies" min="1" required>
+            <input type="number" name="available" id="edit-available" placeholder="Available Copies" min="0" required>
+            <button type="submit">Update Book</button>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+
+
+<!-- JS -->
+<script>
+    function searchBooks() {
+        const input = document.getElementById('search').value.toLowerCase();
+        const rows = document.querySelectorAll('#booksTable tbody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(input) ? '' : 'none';
+        });
     }
-} else {
-    echo '<tr><td colspan="7" class="empty">No books found.</td></tr>';
-}
+
+
+    <?php if ($isLibrarian): ?>
+    function deleteBook(id) {
+        // Step 1: Ask backend for confirmation info
+        fetch('edit-remove.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'confirm_delete=' + id
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'confirm' && data.action === 'delete') {
+                const book = data.summary;
+
+
+                // Build a nice summary (replace with modal if you want)
+                let summary = `
+Title: ${book.title}
+Author: ${book.author}
+Publisher: ${book.publisher}
+Year: ${book.year_published}
+ISBN: ${book.isbn}
+Copies: ${book.copies}
+Available: ${book.available}
+                `;
+
+
+                if (confirm(`${data.message}\n\n${summary}`)) {
+                    // Step 2: If user confirms, actually delete
+                    fetch('edit-remove.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'delete_id=' + id
+                    })
+                    .then(r => r.json())
+                    .then(result => {
+                        alert(result.message);
+                        if (result.status === 'success') location.reload();
+                    });
+                }
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+
+
+    // Open Edit Modal
+    function openEditModal(id) {
+        fetch('edit-remove.php?id=' + id)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const book = data.data;
+                document.getElementById('edit-id').value = book.id;
+                document.getElementById('edit-title').value = book.title;
+                document.getElementById('edit-author').value = book.author;
+                document.getElementById('edit-year').value = book.year_published;
+                document.getElementById('edit-publisher').value = book.publisher;
+                document.getElementById('edit-isbn').value = book.isbn;
+                document.getElementById('edit-copies').value = book.copies;
+                document.getElementById('edit-available').value = book.available;
+                document.getElementById('editModal').style.display = 'block';
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+
+    // Submit Edit Form via AJAX
+    document.getElementById('editForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch('edit-remove.php', {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.status === 'success') {
+                location.reload();
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    });
+
+
+    // Modal close on outside click
+    window.onclick = function(event) {
+        const modal = document.getElementById('editModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+    <?php endif; ?>
+</script>
+
+
+<?php
+$mysqli->close();
+?>
+
+
+
