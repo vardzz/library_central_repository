@@ -1,243 +1,549 @@
-/* styles.css */
+/* Google Fonts: Add this <link> to the <head> of each PHP/HTML file for customized fonts */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
 
-/* ===== Reset & Base Styles ===== */
-* {
+/* Global Styles */
+body {
+    font-family: 'Open Sans', Arial, sans-serif; /* Customized sans-serif for body - consistent across all pages */
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    background-color: #f5f7fa;
-    color: #2c3e50;
-    padding: 40px 20px;
+    background: linear-gradient(135deg, #f4f4f4 0%, #e8f4f8 100%); /* Subtle library-themed gradient */
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+        linear-gradient(45deg, #f4f4f4 25%, transparent 25%), 
+        linear-gradient(-45deg, #f4f4f4 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #f4f4f4 75%), 
+        linear-gradient(-45deg, transparent 75%, #f4f4f4 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 0, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+    animation: fadeIn 0.8s ease-out; /* Gentle page load animation - applies globally */
     line-height: 1.6;
-    min-height: 100vh;
+    color: #2c3e50;
 }
 
-/* ===== Page Title ===== */
-h1 {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 2.2rem;
-    font-weight: bold;
-    text-align: center;
-    color: #1e293b; /* optional: dark slate gray for contrast */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Global Headings - Customized serif font for elegance */
+h1, h2 {
+    font-family: 'Merriweather', Georgia, serif;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+/* Navbar Enhancements - Consistent with index header */
+.navbar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Gradient for depth, matching welcome-header */
+    color: white;
+    padding: 20px; /* Increased padding for better spacing */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Added shadow for consistency */
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: 2em; /* Slightly larger for impact */
+    font-weight: 700;
+    color: #3498db; /* Blue accent, matching index */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     letter-spacing: 1px;
-    margin-bottom: 20px;
 }
 
-/* ===== Navigation Bar ===== */
-nav {
+.navbar button {
+    background: linear-gradient(135deg, #555 0%, #666 100%); /* Gradient for buttons */
+    color: white;
+    border: none;
+    padding: 12px 18px; /* Slightly larger padding */
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease; /* Smooth transitions */
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.navbar button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.navbar button:hover::before {
+    left: 100%;
+}
+
+.navbar button:hover {
+    background: linear-gradient(135deg, #777 0%, #888 100%);
+    transform: scale(1.05); /* Subtle scale on hover */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.navbar button:active {
+    transform: scale(0.98);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Search Bar - Minor font update for consistency */
+.search-bar {
+    margin: 20px 0;
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 45px;
-    flex-wrap: wrap;
 }
 
-nav a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #2980b9;
-    color: #ecf0f1;
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    box-shadow: 0 4px 8px rgba(41, 128, 185, 0.25);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    user-select: none;
+.search-bar input {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-family: 'Open Sans', Arial, sans-serif; /* Consistent font */
 }
 
-nav a:hover,
-nav a:focus {
-    background-color: #1c5980;
-    box-shadow: 0 6px 12px rgba(28, 89, 128, 0.5);
-    outline: none;
+.search-bar button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
     cursor: pointer;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
-/* ===== Table Styles ===== */
+.search-bar button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Tables - Font consistency */
 table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
-    font-size: 1rem;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px; /* Subtle rounding */
+    overflow: hidden; /* For rounded corners */
 }
 
-/* Table Header */
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
 th {
-    background-color: #34495e;
-    color: #ecf0f1;
-    font-weight: 700;
-    padding: 18px 24px;
-    text-align: center;
-    user-select: none;
-}
-
-/* Table Data Cells */
-td {
-    padding: 16px 24px;
-    text-align: center;
-    color: #2c3e50;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-/* Zebra Striping */
-tbody tr:nth-child(even) td {
-    background-color: #f9fbfc;
-}
-
-/* Row Hover Effect */
-tbody tr:hover td {
-    background-color: #d6e7f5;
-    cursor: default;
-}
-
-/* ===== Action Buttons ===== */
-.actions a {
-    margin: 0 10px;
-    color: #2980b9;
+    background-color: #f8f9fa;
+    font-family: 'Merriweather', Georgia, serif; /* Serif for headers */
     font-weight: 600;
-    text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: background-color 0.25s ease, color 0.25s ease;
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.95rem;
-    border: 1.5px solid transparent;
 }
 
-.actions a:hover,
-.actions a:focus {
-    background-color: #1c5980;
-    color: #ecf0f1;
-    border-color: #144466;
-    outline: none;
-    cursor: pointer;
-}
-
-/* Icons in actions - increase size for clarity */
-.actions a svg,
-.actions a::before {
-    font-size: 1.1rem;
-}
-
-/* ===== Empty State Styling ===== */
-.empty {
-    text-align: center;
-    padding: 30px 0;
-    font-style: italic;
-    color: #7f8c8d;
-    user-select: none;
-}
-
-/* ===== Responsive Design ===== */
-@media (max-width: 768px) {
-    body {
-        padding: 25px 15px;
-    }
-
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 30px;
-    }
-
-    nav {
-        gap: 15px;
-        justify-content: center;
-    }
-
-    nav a {
-        padding: 10px 18px;
-        font-size: 0.9rem;
-    }
-
-    table,
-    th,
-    td {
-        font-size: 0.9rem;
-    }
-
-    td, th {
-        padding: 12px 15px;
-    }
-
-    .actions a {
-        margin: 0 6px;
-        padding: 5px 8px;
-        font-size: 0.85rem;
-    }
-}
-
-/* ===== Home Button ===== */
-.home-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #2980b9;
-    color: #fff;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(41, 128, 185, 0.25);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    z-index: 1000;
-}
-
-.home-btn:hover,
-.home-btn:focus {
-    background-color: #1c5980;
-    box-shadow: 0 6px 12px rgba(28, 89, 128, 0.5);
-    outline: none;
-}
-
-/* ===== Borrow / Return Buttons ===== */
-button {
-    background-color: #2980b9;
-    color: #fff;
-    font-weight: 600;
+/* Action Buttons - Enhanced with gradients and effects */
+.action-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
+    padding: 8px 12px; /* Slightly larger */
+    margin-right: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 8px rgba(41, 128, 185, 0.25);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-button:hover,
-button:focus {
-    background-color: #1c5980;
-    box-shadow: 0 6px 12px rgba(28, 89, 128, 0.4);
-    outline: none;
+.action-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Smaller buttons for table actions */
-table button {
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    border-radius: 6px;
+.delete-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
 }
 
-
-
-/* ===== Accessibility Focus States ===== */
-a:focus-visible {
-    outline: 3px solid #2563eb;
-    outline-offset: 3px;
+.borrow-btn, .return-btn {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
 }
 
-/* ===== Optional: Icon Fonts or Emoji Adjustments ===== */
-/* If you want to replace icons with SVG or fonts later, this space is for that. */
+.edit-btn {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: black;
+}
+
+/* Modal - Font consistency */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: none;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px; /* Rounded */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2); /* Enhanced shadow */
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
+.modal-content h2 {
+    font-family: 'Merriweather', Georgia, serif;
+    color: #2c3e50;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
+.modal button {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Two Tables Layout */
+.two-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Index-Specific Styles (Reusable for welcome page) */
+.welcome-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Matches enhanced navbar */
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0; /* No extra margin */
+}
+
+.welcome-header h1 {
+    margin: 0 0 5px 0;
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #3498db;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
+}
+
+.welcome-header p {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.welcome-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 50px 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+    text-align: center;
+    max-width: 600px;
+    margin: 40px auto;
+    border: 1px solid rgba(52, 152, 219, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.welcome-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+}
+
+.welcome-card h2 {
+    color: #2c3e50;
+    font-size: 1.8em;
+    margin-bottom: 30px;
+}
+
+.role-selection {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.role-selection button {
+    font-family: 'Open Sans', Arial, sans-serif;
+    background: linear-gradient(135deg, #555 0%, #666 100%);
+    color: white;
+    border: none;
+    padding: 20px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-selection button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.role-selection button:hover::before {
+    left: 100%;
+}
+
+.role-selection button:hover {
+    background: linear-gradient(135deg, #777 0%, #888 100%);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.role-selection button:active {
+    transform: scale(0.98);
+}
+
+/* Media Queries - Enhanced for all pages */
+@media (max-width: 768px) {
+    .navbar { 
+        flex-direction: column;
+        padding: 15px;
+    }
+    .navbar h1 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    .search-bar { 
+        flex-direction: column; 
+        width: 100%; 
+    }
+    .search-bar input { 
+        width: 100%; 
+        border-radius: 4px; 
+        margin-bottom: 10px; 
+    }
+    .two-tables { 
+        grid-template-columns: 1fr; 
+    }
+    .welcome-header {
+        padding: 20px 15px;
+    }
+    .welcome-header h1 {
+        font-size: 2em;
+    }
+    .welcome-card {
+        padding: 30px 20px;
+        margin: 20px auto;
+        border-radius: 12px;
+    }
+    .role-selection {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .role-selection button {
+        min-width: 200px;
+        padding: 15px 20px;
+    }
+    table {
+        font-size: 14px; /* Smaller text on mobile */
+    }
+    th, td {
+        padding: 8px; /* Reduced padding */
+    }
+}
+
+.library-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.library-table thead th {
+  padding: 12px 10px;
+  text-align: left;
+  color: #6b7280; /* gray text */
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.library-table tbody td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #374151;
+}
+
+.book-cell {
+  display: flex;
+  align-items: center;
+}
+
+.book-icon {
+  background-color: #2c3e8f; /* navy blue */
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+  font-size: 20px; /* Replace with SVG or icon */
+}
+
+.author-cell {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+}
+
+.author-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  opacity: 0.5;
+  /* Use an author icon SVG or font icon here */
+}
+
+.category-badge {
+  background-color: #e0e7ff;
+  color: #3b82f6;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+}
+
+.category-badge.science {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.year-cell {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.copies {
+  font-weight: 700;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+}
+
+.status.available {
+  background-color: #dcfce7;
+  color: #22c55e;
+}
+
+.status.out-of-stock {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+}
+
+.btn.edit {
+  border-color: #374151;
+  color: #374151;
+  background: white;
+}
+
+.btn.delete {
+  border: none;
+  color: #ef4444;
+  background: white;
+}
+
