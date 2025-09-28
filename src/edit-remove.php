@@ -2,9 +2,7 @@
 require 'config.php';
 header('Content-Type: application/json');
 
-
 $response = ["status" => "error", "message" => "Invalid request"];
-
 
 // ===== FETCH BOOK DATA FOR EDIT MODAL =====
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
@@ -15,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $book = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-
     if ($book) {
         $response = ["status" => "success", "data" => $book];
     } else {
@@ -25,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     exit;
 }
 
-
 // ===== REQUEST CONFIRMATION BEFORE DELETE =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     $id = intval($_POST['confirm_delete']);
@@ -34,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     $stmt->execute();
     $book = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-
 
     if ($book) {
         $response = [
@@ -50,13 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     exit;
 }
 
-
 // ===== ACTUAL DELETE BOOK =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $id = intval($_POST['delete_id']);
     $stmt = $mysqli->prepare("DELETE FROM books WHERE id=?");
     $stmt->bind_param("i", $id);
-
 
     if ($stmt->execute()) {
         $response = ["status" => "success", "message" => "✅ Book deleted successfully!"];
@@ -68,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-
 // ===== REQUEST CONFIRMATION BEFORE UPDATE =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_update'])) {
     $id = intval($_POST['confirm_update']);
@@ -77,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_update'])) {
     $stmt->execute();
     $book = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-
 
     if ($book) {
         $response = [
@@ -93,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_update'])) {
     exit;
 }
 
-
 // ===== ACTUAL UPDATE BOOK =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $id        = intval($_POST['id']);
@@ -105,12 +95,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $copies    = intval($_POST['copies']);
     $available = intval($_POST['available']);
 
+    // ===== ISBN VALIDATION =====
+    if (!preg_match('/^\d{9}$|^\d{13}$/', $isbn)) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "ISBN must be exactly 9 or 13 digits."
+        ]);
+        exit;
+    }
 
     $stmt = $mysqli->prepare("UPDATE books
         SET title=?, author=?, publisher=?, year_published=?, isbn=?, copies=?, available=?
         WHERE id=?");
     $stmt->bind_param("sssssiii", $title, $author, $publisher, $year, $isbn, $copies, $available, $id);
-
 
     if ($stmt->execute()) {
         $response = ["status" => "success", "message" => "✅ Book updated successfully!"];
@@ -119,14 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     }
     $stmt->close();
 
-
     echo json_encode($response);
     exit;
 }
 
-
 echo json_encode($response);
 $mysqli->close();
-
-
-
