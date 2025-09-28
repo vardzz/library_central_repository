@@ -1,12 +1,12 @@
 <?php
-// Load from environment variables
-$host = getenv('DB_HOST') ?: '127.0.0.1';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') ?: '';
-$dbname = getenv('DB_NAME') ?: 'library';
+$servername = getenv('DB_HOST') ?: 'db';
+$username   = getenv('DB_USER') ?: 'library_user';
+$password   = getenv('DB_PASS') ?: 'lib_pass';
+$dbname     = getenv('DB_NAME') ?: 'library';
 
-$mysqli = new mysqli($host, $user, $pass, $dbname);
+$mysqli = new mysqli($servername, $username, $password, $dbname);
 
-if ($mysqli->connect_errno) {
-    die("Database connection failed: " . $mysqli->connect_error);
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
 }
+?>
